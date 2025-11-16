@@ -261,6 +261,7 @@ body {
 @media (max-width: 768px) {
     .carrossel .item {
         min-width: calc(50% - 20px); /* 2 por vez no tablet */
+        padding-left: 40px;
     }
 }
 
