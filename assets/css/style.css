@@ -84,14 +84,14 @@ body {
 
 /* SEÇÕES */
 .secao {
-    padding: 80px 120px;
+    padding: 80px 20px;
     text-align: center;
-    font-family: 'Linford ttf.ttf';
 }
 
 .secao h2 {
-    font-family: 'AngelinHeart', cursive;
-
+    font-size: 42px;
+    margin-bottom: 50px;
+    color: #333;
 }
 
 .secao h4 {
@@ -122,57 +122,149 @@ body {
 /*Carroel de imagens*/
 .carrossel-container {
     position: relative;
-    width: 95%;
-    margin: 40px auto;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
     overflow: hidden;
+    padding: 40px 0;
+}
+
+.carrossel-wrapper {
+    overflow: hidden;
+    position: relative;
 }
 
 .carrossel {
     display: flex;
-    gap: 20px;
-    transition: transform 0.4s ease;
+    gap: 30px;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0 20px;
 }
 
 .carrossel .item {
-    min-width: calc(32.00% - 20px);
-    background: #ddd;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
+    flex: 0 0 calc(33.333% - 20px);
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.6;
+    transform: scale(0.9);
+    position: relative;
+}
+
+/* Item central em destaque */
+.carrossel .item.center {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+/* Efeito hover */
+.carrossel .item:hover {
+    transform: scale(0.95) translateY(-10px);
+    box-shadow: 0 12px 50px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+}
+
+.carrossel .item.center:hover {
+    transform: scale(1.02) translateY(-10px);
+}
+
+.carrossel .item-imagem {
+    width: 100%;
+    height: 350px;
+    overflow: hidden;
+    position: relative;
+    background: #f0f0f0;
 }
 
 .carrossel .item img {
-    width: 80%;
-    height: 350px;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    border-radius: 8px;
+    transition: transform 0.4s ease;
 }
 
+.carrossel .item:hover img {
+    transform: scale(1.1);
+}
+
+.carrossel .item-conteudo {
+    padding: 25px 20px;
+}
+
+.carrossel .item h4 {
+    font-size: 20px;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Botões de navegação */
 .carrossel-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: black;
+    background: rgba(0, 0, 0, 0.7);
     color: white;
     border: none;
-    padding: 10px 15px;
+    width: 50px;
+    height: 50px;
     cursor: pointer;
-    font-size: 22px;
-    border-radius: 5px;
-    opacity: 0.7;
+    font-size: 24px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: all 0.3s ease;
     z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carrossel-container:hover .carrossel-btn {
+    opacity: 0.8;
 }
 
 .carrossel-btn:hover {
-    opacity: 1;
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.9);
+    transform: translateY(-50%) scale(1.1);
 }
 
 .carrossel-btn.esquerda {
-    left: 10px;
+    left: 20px;
 }
 
 .carrossel-btn.direita {
-    right: 10px;
+    right: 20px;
+}
+
+/* Indicadores */
+.carrossel-indicadores {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.indicador {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #ddd;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.indicador.ativo {
+    background: #333;
+    width: 30px;
+    border-radius: 6px;
 }
 
 
@@ -185,6 +277,10 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 20px;
+    padding-left: 200px;
+    padding-right: 200px;
+    padding-bottom: 50px;
+
 }
 
 
@@ -201,7 +297,8 @@ body {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     gap: 30px;
-    align-items: center;  /* era: start - MUDAR para center */
+    align-items: center;
+    /* era: start - MUDAR para center */
     margin-bottom: 30px;
     padding: 0 30px;
 }
@@ -219,8 +316,9 @@ body {
     text-align: left;
     display: flex;
     flex-direction: column;
-    justify-content: center;  /* ADICIONAR */
-    
+    justify-content: center;
+    /* ADICIONAR */
+
 }
 
 .coluna-endereco a {
@@ -314,23 +412,134 @@ body {
     filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(90deg);
 }
 
-/* Responsividade */
+
+
+/* Responsivo */
 @media (max-width: 1200px) {
     .container-rodape {
         padding: 0 40px;
     }
+
+    .sobre-conteudo {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
 }
 
-@media (max-width: 992px) {
+/* TABLET (até 1024px) */
+@media (max-width: 1024px) {
+
+    /* Menu */
+    .menu .container {
+        width: 95%;
+    }
+
+    .logo {
+        height: 50px;
+    }
+
+    .navegacao a {
+        margin: 0 8px;
+        font-size: 14px;
+    }
+
+    /* Carrossel */
+    .carrossel .item {
+        flex: 0 0 calc(50% - 15px);
+    }
+
+    .carrossel {
+        gap: 20px;
+    }
+
+    .carrossel-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    /* Seções */
+    .secao {
+        padding: 60px 20px;
+    }
+
+    .secao h2 {
+        font-size: 36px;
+        margin-bottom: 40px;
+    }
+
+    /* Sobre */
+    .sobre-conteudo {
+        padding-left: 60px;
+        padding-right: 60px;
+        font-size: 18px;
+    }
+
+    /* Rodapé */
     .container-rodape {
         padding: 0 30px;
     }
 }
 
+/* TABLET PEQUENO (até 992px) */
+@media (max-width: 992px) {
+    .container-rodape {
+        padding: 0 30px;
+    }
+
+    .sobre-conteudo {
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+}
+
+/* MOBILE GRANDE (até 768px) */
 @media (max-width: 768px) {
+
+    /* Menu */
+    .menu {
+        padding: 8px 0;
+    }
+
+    .menu .container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .logo {
+        height: 45px;
+    }
+
+    .navegacao {
+        display: flex;
+        gap: 5px;
+    }
+
+    .navegacao a {
+        font-size: 13px;
+        margin: 0 5px;
+    }
+
+    /* Seções */
+    .secao {
+        padding: 50px 15px;
+    }
+
+    .secao h2 {
+        font-size: 32px;
+    }
+
+    /* Sobre */
+    .sobre-conteudo {
+        padding-left: 20px;
+        padding-right: 20px;
+        font-size: 16px;
+    }
+
+    /* Rodapé */
     .container-rodape {
         grid-template-columns: 1fr;
-        gap: 30px;
+        gap: 40px;
         padding: 0 20px;
     }
 
@@ -339,13 +548,220 @@ body {
         text-align: center;
     }
 
+    .coluna-contatos {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .redes-sociais {
         justify-content: center;
     }
+
+    .coluna-endereco h3,
+    .coluna-contatos h3 {
+        font-size: 20px;
+    }
 }
 
+/* MOBILE MÉDIO (até 640px) */
+@media (max-width: 640px) {
+
+    /* Carrossel */
+    .carrossel .item {
+        flex: 0 0 calc(100% - 40px);
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    .carrossel {
+        gap: 20px;
+        padding: 0 10px;
+    }
+
+    .carrossel .item:hover {
+        transform: scale(1) translateY(-10px);
+    }
+
+    .carrossel-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+
+    .carrossel-btn.esquerda {
+        left: 10px;
+    }
+
+    .carrossel-btn.direita {
+        right: 10px;
+    }
+
+    .carrossel .item-imagem {
+        height: 280px;
+    }
+
+    /* Seções */
+    .secao {
+        padding: 40px 15px;
+    }
+
+    .secao h2 {
+        font-size: 28px;
+        margin-bottom: 30px;
+    }
+
+    .carrossel .item h4 {
+        font-size: 18px;
+    }
+
+    .carrossel .item-conteudo {
+        padding: 20px 15px;
+    }
+
+    /* Sobre */
+    .sobre-conteudo {
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-bottom: 30px;
+        font-size: 15px;
+    }
+
+    /* Menu */
+    .navegacao a {
+        font-size: 12px;
+    }
+}
+
+/* MOBILE PEQUENO (até 480px) */
 @media (max-width: 480px) {
+
+    /* Menu */
+    .logo {
+        height: 40px;
+    }
+
+    .menu .container {
+        gap: 10px;
+    }
+
+    .navegacao {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .navegacao a {
+        font-size: 11px;
+        margin: 0 3px;
+        padding: 5px;
+    }
+
+    /* Seções */
+    .secao h2 {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+
+    /* Carrossel */
+    .carrossel .item-imagem {
+        height: 250px;
+    }
+
+    .carrossel .item h4 {
+        font-size: 16px;
+    }
+
+    .carrossel-indicadores {
+        margin-top: 20px;
+    }
+
+    .indicador {
+        width: 10px;
+        height: 10px;
+    }
+
+    .indicador.ativo {
+        width: 24px;
+    }
+
+    /* Sobre */
+    .sobre-conteudo {
+        font-size: 14px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .sobre-conteudo p {
+        margin-bottom: 15px;
+        text-align: justify;
+    }
+
+    /* Rodapé */
     .container-rodape {
         padding: 0 15px;
+        gap: 30px;
+    }
+
+    .coluna-endereco h3,
+    .coluna-contatos h3 {
+        font-size: 18px;
+    }
+
+    .coluna-endereco a,
+    .coluna-endereco p {
+        font-size: 14px;
+    }
+
+    .info-contato p {
+        font-size: 14px;
+    }
+
+    .coluna-centro img {
+        width: 120px;
+    }
+
+    .coluna-centro p {
+        font-size: 13px;
+    }
+
+    .redes-sociais img {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* MOBILE EXTRA PEQUENO (até 375px) */
+@media (max-width: 375px) {
+    .secao h2 {
+        font-size: 22px;
+    }
+
+    .carrossel .item-imagem {
+        height: 220px;
+    }
+
+    .sobre-conteudo {
+        font-size: 13px;
+    }
+
+    .navegacao a {
+        font-size: 10px;
+        padding: 4px;
+    }
+}
+
+/* AJUSTES PARA LANDSCAPE EM MOBILE */
+@media (max-height: 500px) and (orientation: landscape) {
+    .menu .container {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .secao {
+        padding: 30px 15px;
+    }
+
+    .carrossel .item-imagem {
+        height: 200px;
     }
 }
