@@ -5,24 +5,28 @@ const indicadoresContainer = document.querySelector(".carrossel-indicadores");
 
 const itens = Array.from(carrossel.querySelectorAll(".item"));
 const totalItens = itens.length;
-let indexAtual = totalItens; // Começa no meio dos clones
+const copiasBuffer = 5; // Número de cópias completas antes e depois
+let indexAtual = 0;
+let estaResetando = false;
 
-// Clona os itens 3 vezes (antes e depois) para loop infinito suave
-const itensClonados = [];
+// Cria múltiplas cópias dos itens para buffer maior
+function criarBuffer() {
+    // Clones no início (múltiplas cópias)
+    for (let copia = 0; copia < copiasBuffer; copia++) {
+        for (let i = itens.length - 1; i >= 0; i--) {
+            const clone = itens[i].cloneNode(true);
+            carrossel.insertBefore(clone, carrossel.firstChild);
+        }
+    }
 
-// Clones no início (para voltar)
-itens.forEach(item => {
-    const clone = item.cloneNode(true);
-    carrossel.insertBefore(clone, carrossel.firstChild);
-    itensClonados.push(clone);
-});
-
-// Clones no final (para avançar)
-itens.forEach(item => {
-    const clone = item.cloneNode(true);
-    carrossel.appendChild(clone);
-    itensClonados.push(clone);
-});
+    // Clones no final (múltiplas cópias)
+    for (let copia = 0; copia < copiasBuffer; copia++) {
+        itens.forEach(item => {
+            const clone = item.cloneNode(true);
+            carrossel.appendChild(clone);
+        });
+    }
+}
 
 // Determina quantos itens mostrar por vez baseado na tela
 function itensPorTela() {
@@ -37,7 +41,6 @@ function criarIndicadores() {
     for (let i = 0; i < totalItens; i++) {
         const indicador = document.createElement('button');
         indicador.classList.add('indicador');
-        if (i === indexAtual) indicador.classList.add('ativo');
         indicador.addEventListener('click', () => irPara(i));
         indicadoresContainer.appendChild(indicador);
     }
@@ -48,7 +51,7 @@ function atualizar(semTransicao = false) {
     const porTela = itensPorTela();
     const todosItens = carrossel.querySelectorAll(".item");
     const larguraItem = itens[0].offsetWidth;
-    const gap = 30; // gap padrão
+    const gap = 30;
 
     if (semTransicao) {
         carrossel.style.transition = 'none';
@@ -58,17 +61,17 @@ function atualizar(semTransicao = false) {
 
     let deslocamento;
     const containerWidth = carrossel.parentElement.offsetWidth;
+    
+    // Posição real no array completo (com buffer de cópias)
+    const indexReal = (copiasBuffer * totalItens) + indexAtual;
 
     if (porTela === 1) {
-        // Mobile: centraliza perfeitamente o item
         const gapMobile = 22;
-        deslocamento = (indexAtual * (larguraItem + gapMobile)) - ((containerWidth - larguraItem) / 2);
+        deslocamento = (indexReal * (larguraItem + gapMobile)) - ((containerWidth - larguraItem) / 2);
     } else if (porTela === 2) {
-        // Tablet: mostra 2 itens
-        deslocamento = indexAtual * (larguraItem + gap);
+        deslocamento = indexReal * (larguraItem + gap);
     } else {
-        // Desktop: centraliza com 3 itens, item do meio em destaque
-        deslocamento = (indexAtual * (larguraItem + gap)) - (containerWidth / 2) + (larguraItem / 2);
+        deslocamento = (indexReal * (larguraItem + gap)) - (containerWidth / 2) + (larguraItem / 2);
     }
 
     carrossel.style.transform = `translateX(-${deslocamento}px)`;
@@ -77,21 +80,49 @@ function atualizar(semTransicao = false) {
     todosItens.forEach(item => item.classList.remove('center'));
 
     // Adiciona classe center apenas no desktop
-    if (porTela === 3 && todosItens[indexAtual]) {
-        todosItens[indexAtual].classList.add('center');
+    if (porTela === 3 && todosItens[indexReal]) {
+        todosItens[indexReal].classList.add('center');
     }
 
-    // Atualiza indicadores (baseado no índice real, não nos clones)
-    const indiceReal = (indexAtual - totalItens + totalItens) % totalItens;
+    // Atualiza indicadores
+    const indiceIndicador = ((indexAtual % totalItens) + totalItens) % totalItens;
     document.querySelectorAll('.indicador').forEach((ind, i) => {
-        ind.classList.toggle('ativo', i === indiceReal);
+        ind.classList.toggle('ativo', i === indiceIndicador);
     });
 
-    // Reativa transição suavemente se estava desativada
     if (semTransicao) {
         requestAnimationFrame(() => {
             carrossel.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
         });
+    }
+}
+
+// Verifica se precisa resetar a posição (quando está longe do centro)
+function verificarReset() {
+    if (estaResetando) return;
+    
+    const limiteInferior = totalItens; // 1 cópia completa de margem
+    const limiteSuperior = totalItens * (copiasBuffer - 1); // deixa 1 cópia de margem
+    
+    // Se saiu muito longe do centro, reseta suavemente
+    if (indexAtual >= limiteSuperior) {
+        estaResetando = true;
+        carrossel.style.transition = 'none';
+        indexAtual = indexAtual - (totalItens * 2); // volta 2 cópias completas
+        atualizar(true);
+        carrossel.offsetHeight; // força reflow
+        setTimeout(() => {
+            estaResetando = false;
+        }, 50);
+    } else if (indexAtual < -limiteInferior) {
+        estaResetando = true;
+        carrossel.style.transition = 'none';
+        indexAtual = indexAtual + (totalItens * 2); // avança 2 cópias completas
+        atualizar(true);
+        carrossel.offsetHeight; // força reflow
+        setTimeout(() => {
+            estaResetando = false;
+        }, 50);
     }
 }
 
@@ -105,34 +136,14 @@ function irPara(index) {
 function avancar() {
     indexAtual++;
     atualizar();
-
-    // Quando chegar no final dos clones, reseta instantaneamente (sem animação)
-    if (indexAtual >= totalItens * 2) {
-        setTimeout(() => {
-            carrossel.style.transition = 'none';
-            indexAtual = totalItens;
-            atualizar(true);
-            // Força o reflow do navegador
-            carrossel.offsetHeight;
-        }, 550);
-    }
+    verificarReset();
 }
 
 // Voltar
 function voltar() {
     indexAtual--;
     atualizar();
-
-    // Quando chegar no início dos clones, reseta instantaneamente (sem animação)
-    if (indexAtual < totalItens) {
-        setTimeout(() => {
-            carrossel.style.transition = 'none';
-            indexAtual = totalItens * 2 - 1;
-            atualizar(true);
-            // Força o reflow do navegador
-            carrossel.offsetHeight;
-        }, 550);
-    }
+    verificarReset();
 }
 
 // Event listeners
@@ -169,16 +180,15 @@ window.addEventListener("resize", () => {
 });
 
 // Inicializar
+criarBuffer();
 criarIndicadores();
-// Posiciona no meio dos clones para permitir navegação infinita
 setTimeout(() => {
     atualizar(true);
 }, 20);
 
-// Auto-play opcional (remova se não quiser)
+// Auto-play
 let autoPlayInterval = setInterval(avancar, 5000);
 
-// Pausa auto-play ao passar o mouse
 carrossel.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
 carrossel.addEventListener('mouseleave', () => {
     autoPlayInterval = setInterval(avancar, 5000);
